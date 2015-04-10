@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">CleanDemo</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="memory_card_title">RAM</string>
+    <string name="memory_total">Total: <b>%1$d</b></string>
+    <string name="memory_usage">"Used: <b>%1$d</b>"</string>
+
+    <string name="storage_card_title">Storage</string>
+    <string name="storage_total">Total: <b>%1$d</b></string>
+    <string name="storage_usage">Used: <b>%1$d</b>"</string>
+
+    <string name="junk_card_title">Junk</string>
+    <string name="junk_total"><b>Total: %1$d</b></string>
+    <string name="junk_memory">Memory: <b>%1$d</b></string>
+    <string name="junk_storage">Storage: <b>%1$d</b>"</string>
+</resources>

@@ -1,0 +1,26 @@
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+
+    <item android:id="@android:id/background">
+
+        <shape
+            android:shape="oval"
+            android:useLevel="false"
+            android:angle="0">
+            <solid android:color="@android:color/transparent"/>
+        </shape>
+    </item>
+
+    <item android:id="@android:id/progress">
+        <shape
+            android:innerRadiusRatio="2.1"
+            android:shape="ring"
+            android:useLevel="true"
+            android:angle="0"
+            android:type="sweep"
+            android:thickness="2.0dp"
+            android:thicknessRatio="25.0">
+            <solid android:color="#1976D2"/>
+        </shape>
+    </item>
+</layer-list>
