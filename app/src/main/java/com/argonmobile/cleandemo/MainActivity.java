@@ -5,14 +5,22 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.argonmobile.cleandemo.present.JunkPresent;
+import com.argonmobile.cleandemo.view.IJunkView;
 
-public class MainActivity extends ActionBarActivity {
+
+public class MainActivity extends ActionBarActivity implements IJunkView {
+
+    private JunkPresent mJunkPresent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
+
+        mJunkPresent = new JunkPresent(this);
+        mJunkPresent.startScan();
     }
 
     @Override
@@ -35,5 +43,40 @@ public class MainActivity extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void startCleaning() {
+
+    }
+
+    @Override
+    public void finishCleaning() {
+
+    }
+
+    @Override
+    public void startScanning() {
+
+    }
+
+    @Override
+    public void stopScanning() {
+
+    }
+
+    @Override
+    public void showTotalJunk() {
+
+    }
+
+    @Override
+    public void updateMemoryJunk() {
+
+    }
+
+    @Override
+    public void updateStorageJunk() {
+
     }
 }
