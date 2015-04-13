@@ -13,8 +13,21 @@ public class JunkPresent {
     private IJunkView mJunkView;
     private StorageScanModel mStorageScanModel;
 
+    public StorageScanModel.StorageScanObserver mStorageScanObserver = new StorageScanModel.StorageScanObserver() {
+        @Override
+        public void onScanStart() {
+            notifyScanStart();
+        }
+
+        @Override
+        public void onScanEnd() {
+            notifyScanEnd();
+        }
+    };
+
     public JunkPresent(Context context) {
         mStorageScanModel = StorageScanModel.getInstance(context);
+        mStorageScanModel.registerStorageScanObserver(mStorageScanObserver);
     }
 
     public void bindJunkView(IJunkView junkView) {
@@ -32,6 +45,19 @@ public class JunkPresent {
     private void notifyCleanStart() {
         if (mJunkView != null) {
             mJunkView.startCleaning();
+        }
+    }
+
+    private void notifyScanStart() {
+        if (mJunkView != null) {
+            mJunkView.startScanning();
+        }
+    }
+
+    private void notifyScanEnd() {
+        if (mJunkView != null) {
+            mJunkView.updateMemoryJunk();
+            mJunkView.stopScanning();
         }
     }
 }

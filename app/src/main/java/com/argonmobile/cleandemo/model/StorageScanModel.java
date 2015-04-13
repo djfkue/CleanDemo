@@ -16,6 +16,8 @@ public class StorageScanModel {
     private static final String TAG = "StorageScanModel";
     private static StorageScanModel mInstance;
 
+    private Context mContext;
+
     private ArrayList<StorageScanObserver> mStorageScanObservers = new ArrayList<>();
 
     private CacheScanTask mCacheScanTask;
@@ -51,8 +53,7 @@ public class StorageScanModel {
     }
 
     private StorageScanModel(Context context) {
-        mCacheScanTask = new CacheScanTask(context);
-        mCacheScanTask.setOnScanListener(mOnScanListener);
+        mContext = context;
     }
 
     public static StorageScanModel getInstance(Context context) {
@@ -75,6 +76,8 @@ public class StorageScanModel {
     }
 
     public void startScan() {
+        mCacheScanTask = new CacheScanTask(mContext);
+        mCacheScanTask.setOnScanListener(mOnScanListener);
         mCacheScanTask.execute();
     }
 

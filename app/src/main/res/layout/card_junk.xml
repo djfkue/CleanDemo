@@ -34,7 +34,7 @@
 
         <ProgressBar
             style="?android:attr/progressBarStyleHorizontal"
-            android:id="@+id/percent_usage"
+            android:id="@+id/progress_indicator"
             android:layout_width="80dp"
             android:layout_height="80dp"
             android:layout_below="@+id/title"
@@ -53,8 +53,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="16dp"
-            android:layout_toRightOf="@+id/percent_usage"
-            android:layout_alignTop="@+id/percent_usage"
+            android:layout_toRightOf="@+id/progress_indicator"
+            android:layout_alignTop="@+id/progress_indicator"
             android:textAppearance="@style/TextAppearance.AppCompat.Headline"
             android:gravity="center"
             android:text="@string/junk_total"

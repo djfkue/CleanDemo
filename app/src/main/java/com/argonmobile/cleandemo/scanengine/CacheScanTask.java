@@ -14,6 +14,7 @@ import com.argonmobile.cleandemo.data.WJPackageInfo;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -23,12 +24,14 @@ import java.util.List;
  */
 public class CacheScanTask extends AsyncTask<Void, String, Long>{
 
+    private static final String TAG = "CacheScanTask";
     private Context mContext;
     private AppDetails mAppDetails;
 
     private OnScanListener mOnScanListener;
 
-    LinkedHashMap<String, WJPackageInfo> mPackageInfos = new LinkedHashMap<>();
+//    HashMap<String, WJPackageInfo> mPackageInfos = new HashMap<>();
+    ArrayList<WJPackageInfo> mPackageInfos = new ArrayList<>();
 
     private int mHandleCounter = 0;
 
@@ -42,10 +45,12 @@ public class CacheScanTask extends AsyncTask<Void, String, Long>{
         mOnScanListener = onScanListener;
     }
 
-    private HashMap<String, WJPackageInfo> getInstalledApps(boolean getSysPackages) {
+    private void getInstalledApps(boolean getSysPackages) {
 
+        long timeStamp = System.currentTimeMillis();
         List<android.content.pm.PackageInfo> packs = mContext.getPackageManager()
                 .getInstalledPackages(0);
+
 
         for (int i = 0; i < packs.size(); i++) {
             android.content.pm.PackageInfo p = packs.get(i);
@@ -53,23 +58,25 @@ public class CacheScanTask extends AsyncTask<Void, String, Long>{
                 continue;
             }
             WJPackageInfo newInfo = new WJPackageInfo();
-            newInfo.mAppName = p.applicationInfo.loadLabel(
-                    mContext.getPackageManager()).toString();
+//            newInfo.mAppName = p.applicationInfo.loadLabel(
+//                    mContext.getPackageManager());
             newInfo.mAppPackageName = p.packageName;
             newInfo.mDataDir = p.applicationInfo.dataDir;
             newInfo.mVersionName = p.versionName;
             newInfo.mVersionCode = p.versionCode;
-            newInfo.icon = p.applicationInfo.loadIcon(mContext
-                    .getPackageManager());
-            //mPackageInfoList.add(newInfo);
-            mPackageInfos.put(newInfo.mAppPackageName, newInfo);
+            newInfo.mApplicationInfo = p.applicationInfo;
+//            newInfo.icon = p.applicationInfo.loadIcon(mContext
+//                    .getPackageManager());
+            mPackageInfos.add(newInfo);
         }
 
-        return mPackageInfos;
+        long timeInterval = System.currentTimeMillis() - timeStamp;
+        Log.e(TAG, "getInstalledApps used: " + timeInterval);
     }
 
     @Override
     protected void onPreExecute() {
+        Log.d(TAG, "start scan...");
         mHandleCounter = 0;
         if (mOnScanListener != null) {
             mOnScanListener.onScanStart();
@@ -81,8 +88,7 @@ public class CacheScanTask extends AsyncTask<Void, String, Long>{
         // get all installed package list first;
         getInstalledApps(true);
         PackageManager pm = mContext.getPackageManager();
-        for (String key : mPackageInfos.keySet()) {
-            WJPackageInfo packageInfo = mPackageInfos.get(key);
+        for (WJPackageInfo packageInfo : mPackageInfos) {
             Method getPackageSizeInfo;
             try {
                 getPackageSizeInfo = pm.getClass().getMethod(
@@ -116,15 +122,20 @@ public class CacheScanTask extends AsyncTask<Void, String, Long>{
             mOnScanListener.onScanProgress(packageInfo);
         }
 
-        Log.e("SD_TRACE", "mHandleCounter: " + mHandleCounter + " mPackageInfos: " + mPackageInfos.size());
+        //Log.e("SD_TRACE", "mHandleCounter: " + mHandleCounter + " mPackageInfos: " + mPackageInfos.size());
         if (mHandleCounter == mPackageInfos.size()) {
             mOnScanListener.onScanEnd();
         }
     }
 
     private WJPackageInfo findPackageInfo(String packageName) {
-        WJPackageInfo packageInfo = mPackageInfos.get(packageName);
-        return packageInfo;
+        //WJPackageInfo packageInfo = mPackageInfos.get(packageName);
+        for (WJPackageInfo packageInfo : mPackageInfos) {
+            if (packageInfo.mAppPackageName.equals(packageName)) {
+                return packageInfo;
+            }
+        }
+        return null;
     }
 
     public interface OnScanListener {
@@ -139,7 +150,7 @@ public class CacheScanTask extends AsyncTask<Void, String, Long>{
         @Override
         public void onGetStatsCompleted(PackageStats pStats, boolean succeeded)
                 throws RemoteException {
-//            Log.d(TAG, "Package Size " + pStats.packageName + "");
+            Log.d(TAG, "Package Size " + pStats.packageName + "");
 //            Log.i(TAG, "Cache Size "+ pStats.cacheSize + "");
 //            Log.w(TAG, "Data Size " + pStats.dataSize + "");
 //            mTotalPackageCacheSize = mTotalPackageCacheSize + pStats.cacheSize + pStats.externalCacheSize;

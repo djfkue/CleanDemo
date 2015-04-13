@@ -12,5 +12,5 @@ public interface IJunkView {
 
     public void showTotalJunk();
     public void updateMemoryJunk();
-    public void updateStorageJunk();
+    public void updateStorageJunk(long junkSize);
 }
