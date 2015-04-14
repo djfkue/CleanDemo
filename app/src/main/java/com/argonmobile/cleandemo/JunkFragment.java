@@ -143,10 +143,16 @@ public class JunkFragment extends Fragment  implements IJunkView {
 
         mHandler.removeMessages(MSG_UPDATE_TOTAL_JUNK);
 
-        String junkString = String.format(getResources().getString(R.string.junk_total), junkSize / 1024 / 1000);
-        CharSequence styledText = Html.fromHtml(junkString);
-        message.obj = styledText;
-        mHandler.sendMessage(message);
+        if (junkSize > 1024000) {
+            String junkString = junkSize / 1024000 + " M";
+            message.obj = junkString;
+            mHandler.sendMessage(message);
+        } else {
+            String junkString = junkSize / 1024 + " K";
+            message.obj = junkString;
+            mHandler.sendMessage(message);
+        }
+
     }
 
     @Override

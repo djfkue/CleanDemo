@@ -64,7 +64,7 @@ public class StorageScanModel {
                 } else {
                     for (int i = 0; i < mPackageInfos.size(); i++) {
                         WJPackageInfo wjPackageInfo = mPackageInfos.get(i);
-                        if (wjPackageInfo.cacheSize < packageInfo.cacheSize) {
+                        if (wjPackageInfo.cacheSize <= packageInfo.cacheSize) {
                             mPackageInfos.add(i, packageInfo);
                             break;
                         }
