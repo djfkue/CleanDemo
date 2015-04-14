@@ -45,12 +45,14 @@ public class JunkFragment extends Fragment  implements IJunkView {
                 case MSG_START_SCAN : {
                     //mProgressBar.setIndeterminate(true);
                     mScanInfoView.setVisibility(View.VISIBLE);
+                    mCacheListView.setVisibility(View.GONE);
                     break;
                 }
                 case MSG_STOP_SCAN : {
                     //mProgressBar.setIndeterminate(false);
                     Log.e("SD_TRACE", "stop scan");
                     mScanInfoView.setVisibility(View.GONE);
+                    mCacheListView.setVisibility(View.VISIBLE);
                     break;
                 }
                 case MSG_UPDATE_STORAGE_JUNK: {
