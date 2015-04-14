@@ -1,101 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    app:cardCornerRadius="2dp"
-    android:layout_marginLeft="16dp"
-    android:layout_marginRight="16dp"
-    android:layout_marginBottom="8dp"
-    android:layout_marginTop="8dp"
-    android:foreground="?android:attr/selectableItemBackground">
+    android:layout_height="180dp"
+    android:background="@color/primary">
 
-    <RelativeLayout
+    <TextView
+        android:id="@+id/total_junk"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:gravity="center"
+        android:text="@string/junk_total"
+        android:textSize="80sp"
+        android:textColor="@color/primary_text_default_material_dark"
+        android:fontFamily="sans-serif-light"
+        />
+
+    <TextView
+        android:id="@+id/junk_scan_progress_info"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="4dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:text="@string/junk_scan_info"
+        android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+        android:textColor="@color/primary_text_default_material_dark"
+        android:singleLine="true"/>
 
-        <TextView
-            android:id="@+id/title"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textAppearance="@style/TextAppearance.AppCompat.Headline"
-            android:paddingTop="8dp"
-            android:paddingBottom="8dp"
-            android:paddingLeft="16dp"
-            android:paddingRight="8dp"
-            android:layout_gravity="bottom"
-            android:text="@string/junk_card_title"
-            android:background="@color/accent"
-            android:shadowDx="1"
-            android:shadowDy="1"
-            android:shadowRadius="1"
-            android:fontFamily="sans-serif-light"
-            android:textColor="@color/primary_text_default_material_dark"/>
-
-        <ProgressBar
-            style="?android:attr/progressBarStyleHorizontal"
-            android:id="@+id/progress_indicator"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:layout_below="@+id/title"
-            android:layout_marginTop="16dp"
-            android:layout_marginLeft="16dp"
-            android:indeterminate="false"
-            android:max="100"
-            android:progress="100"
-            android:progressDrawable="@drawable/progress_bar_states"
-            android:indeterminateDrawable="@drawable/progress_bar_interminate"
-            android:background="@drawable/progress_bar_bg"
-            />
-
-        <TextView
-            android:id="@+id/total_junk"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="16dp"
-            android:layout_toRightOf="@+id/progress_indicator"
-            android:layout_alignTop="@+id/progress_indicator"
-            android:textAppearance="@style/TextAppearance.AppCompat.Headline"
-            android:gravity="center"
-            android:text="@string/junk_total"
-            android:textColor="@color/primary_text_default_material_light"
-            />
-
-        <TextView
-            android:id="@+id/junk_memory"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:layout_below="@+id/total_junk"
-            android:layout_alignLeft="@+id/total_junk"
-            android:gravity="center"
-            android:text="@string/junk_memory"
-            android:textColor="@color/primary_text_default_material_light"
-            />
-
-        <TextView
-            android:id="@+id/junk_storage"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="8dp"
-            android:layout_toRightOf="@+id/junk_memory"
-            android:layout_alignTop="@+id/junk_memory"
-            android:gravity="center"
-            android:text="@string/junk_storage"
-            android:textColor="@color/primary_text_default_material_light"
-            />
-
-        <Button
-            android:layout_width="160dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:layout_marginRight="8dp"
-            android:layout_marginBottom="16dp"
-            android:layout_below="@+id/junk_memory"
-            android:layout_alignLeft="@+id/total_junk"
-            android:layout_alignParentRight="true"
-            android:textAppearance="@style/TextAppearance.AppCompat.Button"
-            android:text="一键清理"/>
-    </RelativeLayout>
-
-</android.support.v7.widget.CardView>
+</RelativeLayout>

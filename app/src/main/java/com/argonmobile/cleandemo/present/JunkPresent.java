@@ -2,6 +2,7 @@ package com.argonmobile.cleandemo.present;
 
 import android.content.Context;
 
+import com.argonmobile.cleandemo.data.WJPackageInfo;
 import com.argonmobile.cleandemo.model.StorageScanModel;
 import com.argonmobile.cleandemo.view.IJunkView;
 
@@ -22,6 +23,12 @@ public class JunkPresent {
         @Override
         public void onScanEnd() {
             notifyScanEnd();
+        }
+
+        @Override
+        public void onScanProgress(WJPackageInfo packageInfo) {
+            mJunkView.updateStorageJunk(packageInfo);
+            mJunkView.showTotalJunk(mStorageScanModel.getTotalCacheJunkSize());
         }
     };
 
@@ -56,8 +63,8 @@ public class JunkPresent {
 
     private void notifyScanEnd() {
         if (mJunkView != null) {
-            mJunkView.updateMemoryJunk();
             mJunkView.stopScanning();
+            mJunkView.updateCacheListView(mStorageScanModel.getPackageInfos());
         }
     }
 }

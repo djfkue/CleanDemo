@@ -2,42 +2,40 @@ package com.argonmobile.cleandemo;
 
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
+import android.text.Html;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.argonmobile.cleandemo.present.JunkPresent;
 import com.argonmobile.cleandemo.view.IJunkView;
+import com.argonmobile.cleandemo.widget.SlidingTabLayout;
+
+import java.util.Locale;
 
 
-public class MainActivity extends ActionBarActivity implements IJunkView {
+public class MainActivity extends ActionBarActivity {
 
-    private JunkPresent mJunkPresent;
+    SectionsPagerAdapter mSectionsPagerAdapter;
 
-    private static final int MSG_START_SCAN = 0x01;
-    private static final int MSG_STOP_SCAN = 0x02;
-    private static final int MSG_UPDATE_STORAGE_JUNK = 0x03;
+    /**
+     * The {@link android.support.v4.view.ViewPager} that will host the section contents.
+     */
+    ViewPager mViewPager;
 
-    private Handler mHandler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what) {
-                case MSG_START_SCAN : {
-                    mProgressBar.setIndeterminate(true);
-                    break;
-                }
-                case MSG_STOP_SCAN : {
-                    mProgressBar.setIndeterminate(false);
-                    break;
-                }
-                default:
-                    break;
-            }
-        }
-    };
-    private ProgressBar mProgressBar;
+    private SlidingTabLayout mSlidingTabLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,20 +43,40 @@ public class MainActivity extends ActionBarActivity implements IJunkView {
 
         setContentView(R.layout.activity_main);
 
-        mJunkPresent = new JunkPresent(this);
-        mJunkPresent.bindJunkView(this);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        if (toolbar != null) {
+            setSupportActionBar(toolbar);
 
-        initView();
-    }
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
 
-    private void initView() {
-        mProgressBar = (ProgressBar) findViewById(R.id.progress_indicator);
+        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+
+        // Set up the ViewPager with the sections adapter.
+        mViewPager = (ViewPager) findViewById(R.id.pager);
+        mViewPager.setAdapter(mSectionsPagerAdapter);
+
+        mSlidingTabLayout = (SlidingTabLayout) findViewById(R.id.sliding_tabs);
+        mSlidingTabLayout.setViewPager(mViewPager);
+
+        mSlidingTabLayout.setCustomTabColorizer(new SlidingTabLayout.TabColorizer() {
+            @Override
+            public int getIndicatorColor(int position) {
+                return getResources().getColor(android.R.color.white);
+            }
+
+            @Override
+            public int getDividerColor(int position) {
+                return 0;
+            }
+        });
+
     }
 
     @Override
     protected void onResume() {
+        Log.e("SD_TRACE", "onResume......");
         super.onResume();
-        mJunkPresent.startScan();
     }
 
     @Override
@@ -83,40 +101,84 @@ public class MainActivity extends ActionBarActivity implements IJunkView {
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public void startCleaning() {
+    /**
+     * A {@link android.support.v4.app.FragmentPagerAdapter} that returns a fragment corresponding to
+     * one of the sections/tabs/pages.
+     */
+    public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
+        public SectionsPagerAdapter(FragmentManager fm) {
+            super(fm);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            // getItem is called to instantiate the fragment for the given page.
+            // Return a PlaceholderFragment (defined as a static inner class below).
+//            if (position == 0) {
+//                return VideoListFragment.newInstance();
+//            } else if (position == 1) {
+//                return PlayListFragment.newInstance();
+//            } else {
+//                return PlaceholderFragment.newInstance(position + 1);
+//            }
+            if (position == 0) {
+                return new JunkFragment();
+            } else if (position == 1) {
+                return PlaceholderFragment.newInstance(position + 1);
+            }
+            return PlaceholderFragment.newInstance(position + 1);
+        }
+
+        @Override
+        public int getCount() {
+            // Show 3 total pages.
+            return 2;
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            Locale l = Locale.getDefault();
+            switch (position) {
+                case 0:
+                    return getString(R.string.title_junk_clean).toUpperCase(l);
+                case 1:
+                    return getString(R.string.title_app_boost).toUpperCase(l);
+            }
+            return null;
+        }
     }
 
-    @Override
-    public void finishCleaning() {
+    /**
+     * A placeholder fragment containing a simple view.
+     */
+    public static class PlaceholderFragment extends Fragment {
+        /**
+         * The fragment argument representing the section number for this
+         * fragment.
+         */
+        private static final String ARG_SECTION_NUMBER = "section_number";
 
-    }
+        /**
+         * Returns a new instance of this fragment for the given section
+         * number.
+         */
+        public static PlaceholderFragment newInstance(int sectionNumber) {
+            PlaceholderFragment fragment = new PlaceholderFragment();
+            Bundle args = new Bundle();
+            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
+            fragment.setArguments(args);
+            return fragment;
+        }
 
-    @Override
-    public void startScanning() {
-        mHandler.sendEmptyMessage(MSG_START_SCAN);
-    }
+        public PlaceholderFragment() {
+        }
 
-    @Override
-    public void stopScanning() {
-        mHandler.sendEmptyMessage(MSG_STOP_SCAN);
-    }
-
-    @Override
-    public void showTotalJunk() {
-
-    }
-
-    @Override
-    public void updateMemoryJunk() {
-
-    }
-
-    @Override
-    public void updateStorageJunk(long junkSize) {
-        Message message = new Message();
-        message.what = MSG_UPDATE_STORAGE_JUNK;
-
+        @Override
+        public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                                 Bundle savedInstanceState) {
+            View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+            return rootView;
+        }
     }
 }
