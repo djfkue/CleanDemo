@@ -125,7 +125,7 @@ public class MainActivity extends ActionBarActivity {
             if (position == 0) {
                 return new JunkFragment();
             } else if (position == 1) {
-                return PlaceholderFragment.newInstance(position + 1);
+                return new BoostFragment();
             }
             return PlaceholderFragment.newInstance(position + 1);
         }
