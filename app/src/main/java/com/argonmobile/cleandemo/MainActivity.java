@@ -113,15 +113,6 @@ public class MainActivity extends ActionBarActivity {
 
         @Override
         public Fragment getItem(int position) {
-            // getItem is called to instantiate the fragment for the given page.
-            // Return a PlaceholderFragment (defined as a static inner class below).
-//            if (position == 0) {
-//                return VideoListFragment.newInstance();
-//            } else if (position == 1) {
-//                return PlayListFragment.newInstance();
-//            } else {
-//                return PlaceholderFragment.newInstance(position + 1);
-//            }
             if (position == 0) {
                 return new JunkFragment();
             } else if (position == 1) {
