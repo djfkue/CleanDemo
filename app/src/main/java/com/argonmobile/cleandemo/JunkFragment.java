@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -145,8 +146,8 @@ public class JunkFragment extends Fragment  implements IJunkView {
 
         mHandler.removeMessages(MSG_UPDATE_TOTAL_JUNK);
 
-        if (junkSize > 1024000) {
-            String junkString = junkSize / 1024000 + " M";
+        if (junkSize > 1048576) {
+            String junkString = junkSize / 1048576 + " M";
             message.obj = junkString;
             mHandler.sendMessage(message);
         } else {
@@ -201,29 +202,37 @@ public class JunkFragment extends Fragment  implements IJunkView {
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
+            final ViewHolder holder;
             if (convertView == null) {
                 convertView = getActivity().getLayoutInflater().inflate(R.layout.application_info, parent, false);
+                holder = new ViewHolder();
+                holder.appIcon = (ImageView)convertView.findViewById(R.id.app_icon);
+                holder.appName = (TextView) convertView.findViewById(R.id.app_name);
+                holder.packageSize = (TextView) convertView.findViewById(R.id.cache_size);
+                convertView.setTag(holder);
+            } else {
+                holder = (ViewHolder) convertView.getTag();
             }
-            ImageView appIcon = (ImageView)convertView.findViewById(R.id.app_icon);
-            TextView appName = (TextView) convertView.findViewById(R.id.app_name);
-            //TextView packageName = (TextView) convertView.findViewById(R.id.package_name);
-            TextView packageSize = (TextView) convertView.findViewById(R.id.cache_size);
 
             WJPackageInfo packageInfoStruct = mPackageInfoList.get(position);
-//            newInfo.icon = p.applicationInfo.loadIcon(mContext
-//                    .getPackageManager());
-            appIcon.setImageDrawable(packageInfoStruct.mApplicationInfo.loadIcon(getActivity().getPackageManager()));
-            appName.setText(packageInfoStruct.mApplicationInfo.loadLabel(getActivity().getPackageManager()));
-            //packageName.setText(packageInfoStruct.mAppPackageName);
+            holder.appIcon.setImageDrawable(packageInfoStruct.mApplicationInfo.loadIcon(getActivity().getPackageManager()));
+            holder.appName.setText(packageInfoStruct.mApplicationInfo.loadLabel(getActivity().getPackageManager()));
 
             DecimalFormat decimalFormat=new DecimalFormat(".00");
-            if (packageInfoStruct.cacheSize > 1024000) {
-                packageSize.setText(decimalFormat.format(packageInfoStruct.cacheSize / 1024000.0f) + " M");
+            if (packageInfoStruct.cacheSize > 1048576) {
+                holder.packageSize.setText(decimalFormat.format(packageInfoStruct.cacheSize / 1048576.0f) + " M");
             } else {
-                packageSize.setText(decimalFormat.format(packageInfoStruct.cacheSize / 1024.0f) + " K");
+                holder.packageSize.setText(decimalFormat.format(packageInfoStruct.cacheSize / 1024.0f) + " K");
             }
 
             return convertView;
+        }
+
+        private class ViewHolder {
+            public ImageView appIcon;
+            public TextView appName;
+            public TextView packageSize;
+            public CheckBox checkBox;
         }
     }
 }
