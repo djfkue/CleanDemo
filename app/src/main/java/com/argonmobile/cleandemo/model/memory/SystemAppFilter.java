@@ -25,12 +25,17 @@ public class SystemAppFilter implements IAppFilter {
         default_ignores.add("com.oppo.vwu");
         default_ignores.add("com.oppo.maxxaudio");
         default_ignores.add("com.coloros.appmanager");
-        defaultFilter.setIgnorePackages(default_ignores);
+        defaultFilter.addPackages(default_ignores);
     }
     private Set<String> ignore_pkgs = new HashSet<String>();
-    public void setIgnorePackages(Collection<String> collection) {
+    @Override
+    public void addPackages(Collection<String> collection) {
         ignore_pkgs.clear();
         ignore_pkgs.addAll(collection);
+    }
+    @Override
+    public void addPackage(String packageName) {
+        ignore_pkgs.add(packageName);
     }
 
     @Override

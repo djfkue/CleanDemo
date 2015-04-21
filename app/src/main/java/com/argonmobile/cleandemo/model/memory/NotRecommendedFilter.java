@@ -18,14 +18,18 @@ public class NotRecommendedFilter implements IAppFilter {
         default_not_recommended.add("com.tencent.mobileqq");
         default_not_recommended.add("com.tencent.mm");
         default_not_recommended.add("com.qihoo360.mobilesafe");
-        defaultFilter.setNotRecommendedPackages(default_not_recommended);
+        defaultFilter.addPackages(default_not_recommended);
     }
     private Set<String> not_recommended_pkgs = new HashSet<String>();
-    public void setNotRecommendedPackages(Collection<String> collection) {
+    @Override
+    public void addPackages(Collection<String> collection) {
         not_recommended_pkgs.clear();
         not_recommended_pkgs.addAll(collection);
     }
-
+    @Override
+    public void addPackage(String packageName) {
+        not_recommended_pkgs.add(packageName);
+    }
     @Override
     public boolean isFilter(String name) {
         return not_recommended_pkgs.contains(name);
