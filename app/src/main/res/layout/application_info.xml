@@ -1,26 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingTop="8dp"
     android:paddingBottom="8dp"
     android:paddingRight="16dp"
-    android:paddingLeft="16dp">
+    android:paddingLeft="64dp">
 
     <ImageView
         android:id="@+id/app_icon"
         android:layout_width="32dp"
         android:layout_height="32dp"
         android:scaleType="centerInside"/>
-    <TextView
-        android:id="@+id/app_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_toRightOf="@+id/app_icon"
-        android:layout_marginLeft="4dp"
-        android:layout_centerVertical="true"
-        android:gravity="center"/>
 
     <CheckBox
         android:id="@+id/checkbox"
@@ -37,4 +28,16 @@
         android:layout_toLeftOf="@+id/checkbox"
         android:layout_marginRight="4dp"
         />
+
+    <TextView
+        android:id="@+id/app_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/app_icon"
+        android:layout_marginLeft="8dp"
+        android:layout_toLeftOf="@+id/cache_size"
+        android:layout_marginRight="8dp"
+        android:layout_centerVertical="true"
+        android:gravity="left"
+        android:singleLine="true"/>
 </RelativeLayout>

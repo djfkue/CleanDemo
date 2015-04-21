@@ -7,10 +7,12 @@
         android:id="@+id/scan_holder"
         layout="@layout/card_junk"/>
 
-    <ListView
-        android:id="@+id/app_list"
+    <ExpandableListView
+        android:id="@+id/junk_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/scan_holder"/>
+        android:layout_below="@+id/scan_holder"
+        android:groupIndicator="@android:color/transparent"
+        android:divider="@android:color/transparent"/>
 
 </RelativeLayout>
