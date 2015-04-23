@@ -21,6 +21,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.argonmobile.cleandemo.model.memory.MemoryModel;
 import com.argonmobile.cleandemo.util.MemorySizeFormatter;
 
 import java.lang.ref.WeakReference;
@@ -30,9 +31,6 @@ import java.util.Map;
 public class BoostFragment extends Fragment implements View.OnClickListener, CompoundButton.OnCheckedChangeListener {
 
     private final static String TAG = "TaskManagerActivity";
-    private ProcessHelper mProcessHelper;
-    private ApplicationHelper mAppHelper;
-    private HistoryHelper mHistoryHelper;
     private ActivityManager mActivityManager;
 
     private List<Map<String, Object>> mProcessInfos;
@@ -108,10 +106,7 @@ public class BoostFragment extends Fragment implements View.OnClickListener, Com
         mMemScanningText = (TextView) rootView.findViewById(R.id.memory_scanning);
 
         mActivityManager = (ActivityManager)getActivity().getSystemService(Context.ACTIVITY_SERVICE);
-        mAppHelper = new ApplicationHelper(getActivity().getPackageManager());
-        mProcessHelper = new ProcessHelper(mActivityManager, mAppHelper);
-        mHistoryHelper = new HistoryHelper();
-
+        MemoryModel.defaultModel.init(this.getActivity());
         mBtnClear.setOnClickListener(this);
 
         return rootView;
@@ -132,9 +127,7 @@ public class BoostFragment extends Fragment implements View.OnClickListener, Com
         super.onStart();
         updateMemoryInfo();
 
-        //updateProcessInfoAsync();
-        mProcessHelper.getRunningAppsAsync(mScanHandler);
-
+        MemoryModel.defaultModel.getRunningAppsAsync(mScanHandler);
     }
 
     @Override
@@ -153,7 +146,8 @@ public class BoostFragment extends Fragment implements View.OnClickListener, Com
                 List<ActivityManager.RunningAppProcessInfo> processes =
                         (List<ActivityManager.RunningAppProcessInfo>)runningAppInfo.get(ProcessHelper.APP_PROCS);
                 for(ActivityManager.RunningAppProcessInfo processInfo : processes) {
-                    mProcessHelper.killApp(processInfo.processName);
+                    //mProcessHelper.killApp(processInfo.processName);
+                    MemoryModel.defaultModel.killApp(processInfo.processName);
                 }
             }
         }
@@ -161,8 +155,7 @@ public class BoostFragment extends Fragment implements View.OnClickListener, Com
         startTime = System.currentTimeMillis();
         updateMemoryInfo();
         Log.i(TAG, "update memory info cost:" + (System.currentTimeMillis() - startTime) + "ms");
-        //updateProcessInfoAsync();
-        mProcessHelper.getRunningAppsAsync(mScanHandler);
+        MemoryModel.defaultModel.getRunningAppsAsync(mScanHandler);
     }
 
     private void updateButtonInfo() {

@@ -11,6 +11,7 @@ import android.os.Handler;
 import android.util.Log;
 import android.util.SparseArray;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -57,6 +58,7 @@ public class MemoryModel {
      */
     public void init(Context ctx) {
         if(ctx == null) throw new IllegalArgumentException("Context be null!");
+        this.ctx = ctx;
         activityManager = (ActivityManager) ctx.getSystemService(Context.ACTIVITY_SERVICE);
         packageManager = ctx.getPackageManager();
     }
@@ -75,6 +77,34 @@ public class MemoryModel {
      */
     public void setNotRecommendedFilter(IAppFilter systemAppFilter) {
         this.systemAppFilter = systemAppFilter;
+    }
+
+    /**
+     * Kill a app
+     * @param packgeName
+     */
+    public void killApp(String packgeName) {
+        Method method = getKillMethod();
+        try {
+            if (method != null) {
+                method.invoke(this.activityManager, packgeName);
+            } else {
+                this.activityManager.restartPackage(packgeName);
+            }
+        } catch (Exception e) {
+            Log.e(TAG, e.getMessage());
+        }
+
+    }
+
+    private Method getKillMethod() {
+        try {
+            Method method = ActivityManager.class.getDeclaredMethod(
+                    "killBackgroundProcesses", String.class);
+            return method;
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     /**
