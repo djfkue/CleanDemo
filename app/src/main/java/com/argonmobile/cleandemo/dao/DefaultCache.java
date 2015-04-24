@@ -10,6 +10,7 @@ public class DefaultCache {
 
     private String mItemName = "";
     private String mDir = "";
+    private String mSubDir = "";
     private String mWildcards = "";
     private boolean mShouldRemoveDir = false;
     private boolean mIsRegular = true;
@@ -21,6 +22,14 @@ public class DefaultCache {
 
     public void setItemName(String itemName) {
         this.mItemName = itemName;
+    }
+
+    public String getSubDir() {
+        return mSubDir;
+    }
+
+    public void setSubDir(String dir) {
+        this.mSubDir = dir;
     }
 
     public String getDir() {

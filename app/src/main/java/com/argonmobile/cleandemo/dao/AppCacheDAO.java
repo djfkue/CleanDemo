@@ -5,7 +5,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-
 import com.argonmobile.cleandemo.db.DBHelper;
 import com.argonmobile.cleandemo.db.SQL;
 

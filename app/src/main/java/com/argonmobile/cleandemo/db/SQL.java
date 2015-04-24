@@ -18,6 +18,7 @@ public class SQL {
     public static final String TABLE_DEFAULT_CACHE = "defaultcache";
     public static final String DEFAULT_CACHE_ITEM_NAME = "item_name";
     public static final String DEFAULT_CACHE_DIR = "dir";
+    public static final String DEFAULT_CACHE_SUB_DIR = "sub_dir";
     public static final String DEFAULT_CACHE_WILDCARDS = "wildcards";
     public static final String DEFAULT_CACHE_REMOVE_DIR = "remove_dir";
     public static final String DEFAULT_CACHE_REGULAR = "regular";
@@ -38,14 +39,9 @@ public class SQL {
                     PRIMARY_KEY + " VARCHAR PRIMARY KEY, " +
                     DEFAULT_CACHE_ITEM_NAME + " VARCHAR, " +
                     DEFAULT_CACHE_DIR + " VARCHAR, " +
+                    DEFAULT_CACHE_SUB_DIR + " VARCHAR, " +
                     DEFAULT_CACHE_WILDCARDS + " VARCHAR, " +
                     DEFAULT_CACHE_REMOVE_DIR + " INT, " +
                     DEFAULT_CACHE_REGULAR + " INT " +
                     ")";
-
-    public static final String MOCK_CACHE_DATA =
-            "INSERT INTO " + TABLE_APP_CACHE + "(" + PRIMARY_KEY + "," +  APP_CACHE_ITEM_NAME + "," +
-                    APP_CACHE_PACKAGE_NAME + "," + APP_CACHE_DIR + "," + APP_CACHE_SUB_DIR + "," +
-                    APP_CACHE_REMOVE_DIR + "," + APP_CACHE_REGULAR + ") VALUES(null,'MicroMsg'," +
-                    "'com.tencent.mm','/Tencent/MicroMsg','/[0-9a-zA-Z]{32}/avatar',1,1);";
 }

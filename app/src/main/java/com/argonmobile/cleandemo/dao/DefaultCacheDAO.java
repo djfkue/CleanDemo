@@ -35,11 +35,12 @@ public class DefaultCacheDAO {
             DefaultCache defaultCache = new DefaultCache();
             defaultCache.setItemName(cursor.getString(1));
             defaultCache.setDir(cursor.getString(2));
-            defaultCache.setWildcards(cursor.getString(3));
-            if (cursor.getInt(4) == 1) {
+            defaultCache.setSubDir(cursor.getString(3));
+            defaultCache.setWildcards(cursor.getString(4));
+            if (cursor.getInt(5) == 1) {
                 defaultCache.flagRemoveDir();
             }
-            if (cursor.getInt(5) == 0) {
+            if (cursor.getInt(6) == 0) {
                 defaultCache.flagNoRegular();
             }
             defaultCacheList.add(defaultCache);
@@ -52,6 +53,7 @@ public class DefaultCacheDAO {
         ContentValues cv = new ContentValues();
         cv.put(SQL.DEFAULT_CACHE_ITEM_NAME, appCache.getItemName());
         cv.put(SQL.DEFAULT_CACHE_DIR, appCache.getDir());
+        cv.put(SQL.DEFAULT_CACHE_SUB_DIR, appCache.getSubDir());
         cv.put(SQL.DEFAULT_CACHE_WILDCARDS, appCache.getWildcards());
         cv.put(SQL.DEFAULT_CACHE_REMOVE_DIR, appCache.isRemoveDir());
         cv.put(SQL.DEFAULT_CACHE_REGULAR, appCache.isRegular());
@@ -73,24 +75,46 @@ public class DefaultCacheDAO {
             DefaultCache appCache = new DefaultCache();
             appCache.setItemName("App_Log");
             appCache.setDir("/");
+            appCache.setSubDir("/");
+            appCache.flagNoRegular();
             appCache.setWildcards("([/s/S]*)log([/s/S]*)");
             insert(appCache);
 
             appCache = new DefaultCache();
             appCache.setItemName("App_Cache");
             appCache.setDir("/");
+            appCache.setSubDir("/");
+            appCache.flagNoRegular();
             appCache.setWildcards("([/s/S]*)cache([/s/S]*)");
             insert(appCache);
 
             appCache = new DefaultCache();
             appCache.setItemName("App_Log");
             appCache.setDir("/Android");
+            appCache.setSubDir("/");
+            appCache.flagNoRegular();
             appCache.setWildcards("([/s/S]*)log([/s/S]*)");
             insert(appCache);
 
             appCache = new DefaultCache();
             appCache.setItemName("App_Cache");
             appCache.setDir("/Android");
+            appCache.setSubDir("/");
+            appCache.flagNoRegular();
+            appCache.setWildcards("([/s/S]*)cache([/s/S]*)");
+            insert(appCache);
+
+            appCache = new DefaultCache();
+            appCache.setItemName("App_Log");
+            appCache.setDir("/Android/data");
+            appCache.setSubDir("/([/s/S]*).([/s/S]*)");
+            appCache.setWildcards("([/s/S]*)log([/s/S]*)");
+            insert(appCache);
+
+            appCache = new DefaultCache();
+            appCache.setItemName("App_Cache");
+            appCache.setDir("/Android/data");
+            appCache.setSubDir("/([/s/S]*).([/s/S]*)");
             appCache.setWildcards("([/s/S]*)cache([/s/S]*)");
             insert(appCache);
         }

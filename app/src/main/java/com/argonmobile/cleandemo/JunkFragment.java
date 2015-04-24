@@ -43,8 +43,8 @@ public class JunkFragment extends Fragment  implements IJunkView {
     private static final int TYPE_RESIDUAL_FILE = 0x05;
     private static final int TYPE_APPLICATION_JUNK = 0x06;
 
-    private static final int MSG_START_SCAN = 0x01;
-    private static final int MSG_STOP_SCAN = 0x02;
+    private static final int MSG_START_CACHE_SCAN = 0x01;
+    private static final int MSG_STOP_CACHE_SCAN = 0x02;
     private static final int MSG_UPDATE_STORAGE_JUNK = 0x03;
     private static final int MSG_UPDATE_TOTAL_JUNK = 0x04;
     private static final int MSG_UPDATE_CACHE_LIST = 0x05;
@@ -54,7 +54,7 @@ public class JunkFragment extends Fragment  implements IJunkView {
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
-                case MSG_START_SCAN : {
+                case MSG_START_CACHE_SCAN: {
                     //mProgressBar.setIndeterminate(true);
                     mScanInfoView.setVisibility(View.VISIBLE);
                     //mCacheListView.setVisibility(View.GONE);
@@ -62,7 +62,7 @@ public class JunkFragment extends Fragment  implements IJunkView {
                     mJunkAdapter.notifyDataSetChanged();
                     break;
                 }
-                case MSG_STOP_SCAN : {
+                case MSG_STOP_CACHE_SCAN: {
                     //mProgressBar.setIndeterminate(false);
                     Log.e("SD_TRACE", "stop scan");
                     mScanInfoView.setVisibility(View.GONE);
@@ -190,12 +190,12 @@ public class JunkFragment extends Fragment  implements IJunkView {
 
     @Override
     public void startSystemCacheScanning() {
-        mHandler.sendEmptyMessage(MSG_START_SCAN);
+        mHandler.sendEmptyMessage(MSG_START_CACHE_SCAN);
     }
 
     @Override
     public void stopSystemCacheScanning() {
-        mHandler.sendEmptyMessage(MSG_STOP_SCAN);
+        mHandler.sendEmptyMessage(MSG_STOP_CACHE_SCAN);
     }
 
     @Override
