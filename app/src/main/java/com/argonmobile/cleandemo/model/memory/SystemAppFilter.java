@@ -21,6 +21,9 @@ public class SystemAppFilter implements IAppFilter {
         default_ignores.add("android.process.media");
         default_ignores.add("android.process.acore");
         default_ignores.add("android.process.TrafficMonitor");
+
+        default_ignores.add("android.process.mediaUI");
+
         default_ignores.add("com.oppo.launcher");
         default_ignores.add("com.oppo.oppogestureservice");
         default_ignores.add("com.oppo.vwu");
