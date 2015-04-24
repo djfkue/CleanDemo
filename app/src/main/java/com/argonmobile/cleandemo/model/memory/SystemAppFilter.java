@@ -22,7 +22,11 @@ public class SystemAppFilter implements IAppFilter {
         default_ignores.add("android.process.acore");
         default_ignores.add("android.process.TrafficMonitor");
 
+        // for xiaomi only
         default_ignores.add("android.process.mediaUI");
+        default_ignores.add("com.miui.securitycenter");
+        default_ignores.add("com.miui.whetstone");
+        // -- end --
 
         default_ignores.add("com.oppo.launcher");
         default_ignores.add("com.oppo.oppogestureservice");

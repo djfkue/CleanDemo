@@ -218,7 +218,7 @@ public class BoostFragment extends Fragment implements View.OnClickListener, Com
             holder.checkBox.setOnCheckedChangeListener(BoostFragment.this);
             Map<String, Object> processInfo = mProcessInfos.get(position);
             int memorySizeKb = (Integer)processInfo.get(ProcessHelper.APP_TOTAL_PSS);
-            Log.i(TAG, "app name: " + (String) processInfo.get(ProcessHelper.APP_NAME));
+            Log.i(TAG, "app name: " + (String) processInfo.get(ProcessHelper.APP_NAME) + ": " + processInfo.get(ProcessHelper.PKG_NAME));
             Drawable appIcon;
             if(processInfo.get(ProcessHelper.APP_ICON) instanceof Drawable) {
                 appIcon = (Drawable)processInfo.get(ProcessHelper.APP_ICON);
