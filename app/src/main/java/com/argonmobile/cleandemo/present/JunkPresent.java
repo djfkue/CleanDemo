@@ -3,7 +3,8 @@ package com.argonmobile.cleandemo.present;
 import android.content.Context;
 
 import com.argonmobile.cleandemo.data.WJPackageInfo;
-import com.argonmobile.cleandemo.model.StorageScanModel;
+import com.argonmobile.cleandemo.model.applicationjunk.ApplicationCacheModel;
+import com.argonmobile.cleandemo.model.systemcache.StorageScanModel;
 import com.argonmobile.cleandemo.view.IJunkView;
 
 /**
@@ -14,21 +15,38 @@ public class JunkPresent {
     private IJunkView mJunkView;
     private StorageScanModel mStorageScanModel;
 
-    public StorageScanModel.StorageScanObserver mStorageScanObserver = new StorageScanModel.StorageScanObserver() {
+    private StorageScanModel.StorageScanObserver mStorageScanObserver = new StorageScanModel.StorageScanObserver() {
         @Override
         public void onScanStart() {
-            notifyScanStart();
+            notifySystemCacheScanStart();
         }
 
         @Override
         public void onScanEnd() {
-            notifyScanEnd();
+            notifySystemCacheScanEnd();
         }
 
         @Override
         public void onScanProgress(WJPackageInfo packageInfo) {
             mJunkView.updateStorageJunk(packageInfo);
             mJunkView.showTotalJunk(mStorageScanModel.getTotalCacheJunkSize());
+        }
+    };
+
+    private ApplicationCacheModel.AppScanObserver mAppScanObserver = new ApplicationCacheModel.AppScanObserver() {
+        @Override
+        public void onScanStart() {
+            notifyAppScanStart();
+        }
+
+        @Override
+        public void onScanEnd() {
+            notifyAppScanEnd();
+        }
+
+        @Override
+        public void onScanProgress(WJPackageInfo packageInfo) {
+
         }
     };
 
@@ -55,16 +73,27 @@ public class JunkPresent {
         }
     }
 
-    private void notifyScanStart() {
+    private void notifySystemCacheScanStart() {
         if (mJunkView != null) {
-            mJunkView.startScanning();
+            mJunkView.startSystemCacheScanning();
         }
     }
 
-    private void notifyScanEnd() {
+    private void notifySystemCacheScanEnd() {
         if (mJunkView != null) {
-            mJunkView.stopScanning();
-            mJunkView.updateCacheListView(mStorageScanModel.getPackageInfos());
+            mJunkView.stopSystemCacheScanning();
+            mJunkView.updateSystemCacheListView(mStorageScanModel.getPackageInfos());
         }
+    }
+
+
+    private void notifyAppScanEnd() {
+        if (mJunkView != null) {
+
+        }
+    }
+
+    private void notifyAppScanStart() {
+
     }
 }

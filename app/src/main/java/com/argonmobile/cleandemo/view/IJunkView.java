@@ -1,5 +1,6 @@
 package com.argonmobile.cleandemo.view;
 
+import com.argonmobile.cleandemo.data.WJAppCacheScanResult;
 import com.argonmobile.cleandemo.data.WJPackageInfo;
 
 import java.util.ArrayList;
@@ -11,12 +12,14 @@ public interface IJunkView {
     public void startCleaning();
     public void finishCleaning();
 
-    public void startScanning();
-    public void stopScanning();
+    public void startSystemCacheScanning();
+    public void stopSystemCacheScanning();
 
     public void showTotalJunk(long junkSize);
     public void updateMemoryJunk(long junkSize);
     public void updateStorageJunk(WJPackageInfo packageInfo);
 
-    public void updateCacheListView(ArrayList<WJPackageInfo> cacheList);
+    public void updateSystemCacheListView(ArrayList<WJPackageInfo> cacheList);
+
+    public void updateApplicationCacheListView(ArrayList<WJAppCacheScanResult> appCacheList);
 }

@@ -19,7 +19,8 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
     <string name="junk_type_memory">Memory Boost</string>
-    <string name="junk_type_files">Junk Files</string>
+    <string name="junk_type_files">System Cache</string>
+    <string name="junk_type_application_junk">Application Junk</string>
     <string name="junk_type_useless_installer">Useless Installers</string>
     <string name="junk_type_residual">Residual Files</string>
     <string name="junk_type_adverts">Adverts</string>

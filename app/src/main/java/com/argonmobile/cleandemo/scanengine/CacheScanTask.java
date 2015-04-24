@@ -5,18 +5,14 @@ import android.content.pm.IPackageStatsObserver;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageStats;
 import android.os.AsyncTask;
-import android.os.Handler;
 import android.os.RemoteException;
 import android.util.Log;
 
-import com.argonmobile.cleandemo.data.AppDetails;
 import com.argonmobile.cleandemo.data.WJPackageInfo;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 
 /**
@@ -26,7 +22,6 @@ public class CacheScanTask extends AsyncTask<Void, String, Long>{
 
     private static final String TAG = "CacheScanTask";
     private Context mContext;
-    private AppDetails mAppDetails;
 
     private OnScanListener mOnScanListener;
 
@@ -37,7 +32,6 @@ public class CacheScanTask extends AsyncTask<Void, String, Long>{
 
     public CacheScanTask(Context context) {
         mContext = context;
-        mAppDetails = new AppDetails(context);
         mHandleCounter = 0;
     }
 
