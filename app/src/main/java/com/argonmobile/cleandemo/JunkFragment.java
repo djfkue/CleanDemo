@@ -3,7 +3,6 @@ package com.argonmobile.cleandemo;
 
 import android.animation.ObjectAnimator;
 import android.app.Activity;
-import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -12,7 +11,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.CheckBox;
 import android.widget.ExpandableListView;
@@ -23,6 +21,7 @@ import android.widget.TextView;
 import com.argonmobile.cleandemo.data.WJAppCacheScanResult;
 import com.argonmobile.cleandemo.data.WJPackageInfo;
 import com.argonmobile.cleandemo.present.JunkPresent;
+import com.argonmobile.cleandemo.util.MemorySizeFormatter;
 import com.argonmobile.cleandemo.view.IJunkView;
 
 import java.text.DecimalFormat;
@@ -43,31 +42,42 @@ public class JunkFragment extends Fragment  implements IJunkView {
     private static final int TYPE_RESIDUAL_FILE = 0x05;
     private static final int TYPE_APPLICATION_JUNK = 0x06;
 
-    private static final int MSG_START_CACHE_SCAN = 0x01;
-    private static final int MSG_STOP_CACHE_SCAN = 0x02;
+    private static final int MSG_START_SYSTEM_CACHE_SCAN = 0x01;
+    private static final int MSG_STOP_SYSTEM_CACHE_SCAN = 0x02;
     private static final int MSG_UPDATE_STORAGE_JUNK = 0x03;
     private static final int MSG_UPDATE_TOTAL_JUNK = 0x04;
     private static final int MSG_UPDATE_CACHE_LIST = 0x05;
-    private static final int MSG_UPDATE_APP_CACHE_LIST = 0x06;
+
+    private static final int MSG_START_APP_CACHE_SCAN = 0x11;
+    private static final int MSG_STOP_APP_CACHE_SCAN = 0x12;
+    private static final int MSG_UPDATE_APP_CACHE_LIST = 0x15;
 
     private Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
-                case MSG_START_CACHE_SCAN: {
-                    //mProgressBar.setIndeterminate(true);
-                    mScanInfoView.setVisibility(View.VISIBLE);
-                    //mCacheListView.setVisibility(View.GONE);
-                    mIsScanning = true;
+
+                case MSG_START_APP_CACHE_SCAN: {
+                    mIsAppCacheScanning = true;
+                    //mJunkAdapter.notifyDataSetChanged();
+                    break;
+                }
+
+                case MSG_STOP_APP_CACHE_SCAN: {
+                    mIsAppCacheScanning = false;
                     mJunkAdapter.notifyDataSetChanged();
                     break;
                 }
-                case MSG_STOP_CACHE_SCAN: {
-                    //mProgressBar.setIndeterminate(false);
-                    Log.e("SD_TRACE", "stop scan");
+
+                case MSG_START_SYSTEM_CACHE_SCAN: {
+                    mScanInfoView.setVisibility(View.VISIBLE);
+                    mIsSystemCacheScanning = true;
+                    mJunkAdapter.notifyDataSetChanged();
+                    break;
+                }
+                case MSG_STOP_SYSTEM_CACHE_SCAN: {
                     mScanInfoView.setVisibility(View.GONE);
-                    //mCacheListView.setVisibility(View.VISIBLE);
-                    mIsScanning = false;
+                    mIsSystemCacheScanning = false;
                     mJunkAdapter.notifyDataSetChanged();
                     break;
                 }
@@ -96,7 +106,6 @@ public class JunkFragment extends Fragment  implements IJunkView {
     private TextView mScanInfoView;
 
     private ExpandableListView mCacheListView;
-    private AppAdapter mAppAdapter;
 
     ArrayList<WJPackageInfo> mPackageInfoList = new ArrayList<>();
     ArrayList<WJAppCacheScanResult> mAppCacheScanResult = new ArrayList<>();
@@ -105,7 +114,8 @@ public class JunkFragment extends Fragment  implements IJunkView {
 
     private ArrayList<Integer> mJunkTypeList = new ArrayList<>();
 
-    private boolean mIsScanning = true;
+    private boolean mIsSystemCacheScanning = true;
+    private boolean mIsAppCacheScanning = true;
 
     public JunkFragment() {
         //TODO just for demo
@@ -139,7 +149,7 @@ public class JunkFragment extends Fragment  implements IJunkView {
             @Override
             public boolean onGroupClick(ExpandableListView parent, View v, int groupPosition, long id) {
                 Log.e("SD_TRACE", "onGroupClick....");
-                if (mIsScanning) {
+                if (mIsSystemCacheScanning) {
                     return false;
                 }
                 if (!parent.isGroupExpanded(groupPosition)) {
@@ -164,7 +174,6 @@ public class JunkFragment extends Fragment  implements IJunkView {
             }
         });
 
-        mAppAdapter = new AppAdapter(getActivity(), R.layout.activity_main);
         mJunkAdapter = new JunkAdapter();
         mCacheListView.setAdapter(mJunkAdapter);
 
@@ -190,12 +199,12 @@ public class JunkFragment extends Fragment  implements IJunkView {
 
     @Override
     public void startSystemCacheScanning() {
-        mHandler.sendEmptyMessage(MSG_START_CACHE_SCAN);
+        mHandler.sendEmptyMessage(MSG_START_SYSTEM_CACHE_SCAN);
     }
 
     @Override
     public void stopSystemCacheScanning() {
-        mHandler.sendEmptyMessage(MSG_STOP_CACHE_SCAN);
+        mHandler.sendEmptyMessage(MSG_STOP_SYSTEM_CACHE_SCAN);
     }
 
     @Override
@@ -244,6 +253,16 @@ public class JunkFragment extends Fragment  implements IJunkView {
     }
 
     @Override
+    public void startAppCacheSanning() {
+        mHandler.sendEmptyMessage(MSG_START_APP_CACHE_SCAN);
+    }
+
+    @Override
+    public void stopAppCacheSanning() {
+        mHandler.sendEmptyMessage(MSG_STOP_APP_CACHE_SCAN);
+    }
+
+    @Override
     public void updateApplicationCacheListView(ArrayList<WJAppCacheScanResult> appCacheList) {
         mAppCacheScanResult.clear();
         mAppCacheScanResult.addAll(appCacheList);
@@ -259,6 +278,13 @@ public class JunkFragment extends Fragment  implements IJunkView {
 
         @Override
         public int getChildrenCount(int groupPosition) {
+            int groupType = mJunkTypeList.get(groupPosition);
+            switch (groupType) {
+                case TYPE_CACHE_JUNK:
+                    return mPackageInfoList.size();
+                case TYPE_APPLICATION_JUNK:
+                    return mAppCacheScanResult.size();
+            }
             return mPackageInfoList.size();
         }
 
@@ -298,23 +324,11 @@ public class JunkFragment extends Fragment  implements IJunkView {
                 viewHolder.checkMark = (CheckBox) convertView.findViewById(R.id.check_box);
                 viewHolder.expandIndicator = convertView.findViewById(R.id.expand_indicator);
                 viewHolder.progressIndicator = (ProgressBar) convertView.findViewById(R.id.progress_indicator);
-                viewHolder.junkSzie = (TextView) convertView.findViewById(R.id.junk_size);
+                viewHolder.junkSize = (TextView) convertView.findViewById(R.id.junk_size);
                 viewHolder.junkTypeName = (TextView) convertView.findViewById(R.id.junk_type);
                 convertView.setTag(viewHolder);
             } else {
                 viewHolder = (GroupViewHolder) convertView.getTag();
-            }
-
-            if (!mIsScanning) {
-                viewHolder.progressIndicator.setVisibility(View.GONE);
-                viewHolder.expandIndicator.setVisibility(View.VISIBLE);
-                viewHolder.checkMark.setVisibility(View.VISIBLE);
-                viewHolder.junkSzie.setVisibility(View.VISIBLE);
-            } else {
-                viewHolder.progressIndicator.setVisibility(View.VISIBLE);
-                viewHolder.expandIndicator.setVisibility(View.GONE);
-                viewHolder.checkMark.setVisibility(View.GONE);
-                viewHolder.junkSzie.setVisibility(View.GONE);
             }
 
             int groupType = mJunkTypeList.get(groupPosition);
@@ -326,6 +340,7 @@ public class JunkFragment extends Fragment  implements IJunkView {
                     junkType = getString(R.string.junk_type_adverts);
                     break;
                 case TYPE_CACHE_JUNK:
+                    getSystemCacheGroupView(viewHolder, groupPosition);
                     junkType = getString(R.string.junk_type_files);
                     break;
                 case TYPE_MEMORY_BOOST:
@@ -338,6 +353,7 @@ public class JunkFragment extends Fragment  implements IJunkView {
                     junkType = getString(R.string.junk_type_useless_installer);
                     break;
                 case TYPE_APPLICATION_JUNK:
+                    getApplicationGroupView(viewHolder, groupPosition);
                     junkType = getString(R.string.junk_type_application_junk);
                     break;
             }
@@ -345,6 +361,49 @@ public class JunkFragment extends Fragment  implements IJunkView {
             viewHolder.junkTypeName.setText(junkType);;
 
             return convertView;
+        }
+
+        private void getApplicationGroupView(GroupViewHolder viewHolder, int groupPosition) {
+            if (!mIsAppCacheScanning) {
+                viewHolder.progressIndicator.setVisibility(View.GONE);
+                viewHolder.expandIndicator.setVisibility(View.VISIBLE);
+                viewHolder.checkMark.setVisibility(View.VISIBLE);
+                viewHolder.junkSize.setVisibility(View.VISIBLE);
+
+                long junkSize = 0;
+
+                for (WJAppCacheScanResult appCacheScanResult : mAppCacheScanResult) {
+                    junkSize += appCacheScanResult.mJunkTotalSize;
+                }
+                viewHolder.junkSize.setText(MemorySizeFormatter.formatMemorySize(junkSize));
+            } else {
+                viewHolder.progressIndicator.setVisibility(View.VISIBLE);
+                viewHolder.expandIndicator.setVisibility(View.GONE);
+                viewHolder.checkMark.setVisibility(View.GONE);
+                viewHolder.junkSize.setVisibility(View.GONE);
+            }
+        }
+
+        private void getSystemCacheGroupView(GroupViewHolder viewHolder, int groupPosition) {
+            if (!mIsSystemCacheScanning) {
+                viewHolder.progressIndicator.setVisibility(View.GONE);
+                viewHolder.expandIndicator.setVisibility(View.VISIBLE);
+                viewHolder.checkMark.setVisibility(View.VISIBLE);
+                viewHolder.junkSize.setVisibility(View.VISIBLE);
+
+                long junkSize = 0;
+
+                for (WJPackageInfo packageInfo : mPackageInfoList) {
+                    junkSize += packageInfo.cacheSize;
+                }
+                viewHolder.junkSize.setText(MemorySizeFormatter.formatMemorySize(junkSize));
+            } else {
+                viewHolder.progressIndicator.setVisibility(View.VISIBLE);
+                viewHolder.expandIndicator.setVisibility(View.GONE);
+                viewHolder.checkMark.setVisibility(View.GONE);
+                viewHolder.junkSize.setVisibility(View.GONE);
+
+            }
         }
 
         @Override
@@ -391,16 +450,17 @@ public class JunkFragment extends Fragment  implements IJunkView {
         }
 
         private void getApplicationCacheChildView(ViewHolder holder, int childPosition) {
-            WJPackageInfo packageInfoStruct = mPackageInfoList.get(childPosition);
-            holder.appIcon.setImageDrawable(packageInfoStruct.mApplicationInfo.loadIcon(getActivity().getPackageManager()));
-            holder.appName.setText(packageInfoStruct.mApplicationInfo.loadLabel(getActivity().getPackageManager()));
-
-            DecimalFormat decimalFormat=new DecimalFormat(".00");
-            if (packageInfoStruct.cacheSize > 1048576) {
-                holder.packageSize.setText(decimalFormat.format(packageInfoStruct.cacheSize / 1048576.0f) + " M");
+            WJAppCacheScanResult appCacheScanResult = mAppCacheScanResult.get(childPosition);
+            //WJPackageInfo packageInfoStruct = mPackageInfoList.get(childPosition);
+            if (appCacheScanResult.mApplicationInfo == null) {
+                holder.appIcon.setImageResource(R.drawable.ic_delete);
+                holder.appName.setText("Other Cache");
             } else {
-                holder.packageSize.setText(decimalFormat.format(packageInfoStruct.cacheSize / 1024.0f) + " K");
+                holder.appIcon.setImageDrawable(appCacheScanResult.mApplicationInfo.loadIcon(getActivity().getPackageManager()));
+                holder.appName.setText(appCacheScanResult.mApplicationInfo.loadLabel(getActivity().getPackageManager()));
             }
+            holder.packageSize.setText(MemorySizeFormatter.formatMemorySize(appCacheScanResult.mJunkTotalSize));
+
         }
 
         @Override
@@ -418,61 +478,9 @@ public class JunkFragment extends Fragment  implements IJunkView {
         private class GroupViewHolder {
             public ProgressBar progressIndicator;
             public TextView junkTypeName;
-            public TextView junkSzie;
+            public TextView junkSize;
             public View expandIndicator;
             public CheckBox checkMark;
-        }
-    }
-
-    class AppAdapter extends ArrayAdapter<WJPackageInfo> {
-
-        public AppAdapter(Context context, int resource) {
-            super(context, resource);
-        }
-
-        @Override
-        public int getCount() {
-            return mPackageInfoList.size();
-        }
-
-        @Override
-        public long getItemId(int position) {
-            return position;
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            final ViewHolder holder;
-            if (convertView == null) {
-                convertView = getActivity().getLayoutInflater().inflate(R.layout.application_info, parent, false);
-                holder = new ViewHolder();
-                holder.appIcon = (ImageView)convertView.findViewById(R.id.app_icon);
-                holder.appName = (TextView) convertView.findViewById(R.id.app_name);
-                holder.packageSize = (TextView) convertView.findViewById(R.id.cache_size);
-                convertView.setTag(holder);
-            } else {
-                holder = (ViewHolder) convertView.getTag();
-            }
-
-            WJPackageInfo packageInfoStruct = mPackageInfoList.get(position);
-            holder.appIcon.setImageDrawable(packageInfoStruct.mApplicationInfo.loadIcon(getActivity().getPackageManager()));
-            holder.appName.setText(packageInfoStruct.mApplicationInfo.loadLabel(getActivity().getPackageManager()));
-
-            DecimalFormat decimalFormat=new DecimalFormat(".00");
-            if (packageInfoStruct.cacheSize > 1048576) {
-                holder.packageSize.setText(decimalFormat.format(packageInfoStruct.cacheSize / 1048576.0f) + " M");
-            } else {
-                holder.packageSize.setText(decimalFormat.format(packageInfoStruct.cacheSize / 1024.0f) + " K");
-            }
-
-            return convertView;
-        }
-
-        private class ViewHolder {
-            public ImageView appIcon;
-            public TextView appName;
-            public TextView packageSize;
-            public CheckBox checkBox;
         }
     }
 }

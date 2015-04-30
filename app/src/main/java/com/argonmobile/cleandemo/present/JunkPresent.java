@@ -2,6 +2,7 @@ package com.argonmobile.cleandemo.present;
 
 import android.content.Context;
 
+import com.argonmobile.cleandemo.data.WJAppCacheScanResult;
 import com.argonmobile.cleandemo.data.WJPackageInfo;
 import com.argonmobile.cleandemo.model.applicationjunk.ApplicationCacheModel;
 import com.argonmobile.cleandemo.model.systemcache.StorageScanModel;
@@ -33,6 +34,8 @@ public class JunkPresent {
         }
     };
 
+    private ApplicationCacheModel mAppCacheModel;
+
     private ApplicationCacheModel.AppScanObserver mAppScanObserver = new ApplicationCacheModel.AppScanObserver() {
         @Override
         public void onScanStart() {
@@ -53,6 +56,9 @@ public class JunkPresent {
     public JunkPresent(Context context) {
         mStorageScanModel = StorageScanModel.getInstance(context);
         mStorageScanModel.registerStorageScanObserver(mStorageScanObserver);
+
+        mAppCacheModel = ApplicationCacheModel.getInstance(context);
+        mAppCacheModel.registerStorageScanObserver(mAppScanObserver);
     }
 
     public void bindJunkView(IJunkView junkView) {
@@ -61,6 +67,7 @@ public class JunkPresent {
 
     public void startScan() {
         mStorageScanModel.startScan();
+        mAppCacheModel.startScan();
     }
 
     public void quickClean() {
@@ -89,11 +96,22 @@ public class JunkPresent {
 
     private void notifyAppScanEnd() {
         if (mJunkView != null) {
+            mJunkView.stopAppCacheSanning();
+            mJunkView.updateApplicationCacheListView(mAppCacheModel.getAppCacheScanResults());
 
+            long totalJunk = 0;
+
+            for (WJAppCacheScanResult scanResult : mAppCacheModel.getAppCacheScanResults()) {
+                totalJunk += scanResult.mJunkTotalSize;
+            }
+
+            mJunkView.showTotalJunk(mStorageScanModel.getTotalCacheJunkSize() + totalJunk);
         }
     }
 
     private void notifyAppScanStart() {
-
+        if (mJunkView != null) {
+            mJunkView.startAppCacheSanning();
+        }
     }
 }

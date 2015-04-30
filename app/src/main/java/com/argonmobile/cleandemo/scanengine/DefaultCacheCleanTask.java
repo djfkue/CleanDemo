@@ -8,6 +8,7 @@ import android.util.Log;
 
 import com.argonmobile.cleandemo.dao.DefaultCache;
 import com.argonmobile.cleandemo.dao.DefaultCacheDAO;
+import com.argonmobile.cleandemo.data.WJAppCacheScanResult;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -25,13 +26,14 @@ public class DefaultCacheCleanTask extends CleanTask {
     private static final String SDCARD_PATH = Environment.getExternalStorageDirectory().getAbsolutePath();
     private Context mContext;
     private DefaultCacheDAO mDefaultCacheDAO;
-    private TaskCallback mCallback;
+    private AppCacheScanTaskCallback mCallback;
 
     private List<DefaultCache> mDefaultCaches = new ArrayList<DefaultCache>();
 
-    private HashMap<String, Long> mCounter = new HashMap<String, Long>();
+    //private HashMap<String, Long> mCounter = new HashMap<String, Long>();
+    private ArrayList<WJAppCacheScanResult> mCounter = new ArrayList<>();
 
-    public DefaultCacheCleanTask(Context context, TaskCallback callback) {
+    public DefaultCacheCleanTask(Context context, AppCacheScanTaskCallback callback) {
         super();
         mContext = context;
         mCallback = callback;
@@ -146,14 +148,57 @@ public class DefaultCacheCleanTask extends CleanTask {
 
     public void cacheSizeCounter(DefaultCache appCache) {
         List<String> dirs = appCache.getTargetDir();
+
+//        if (dirs.size() > 0) {
+//            String tmpPath = dirs.get(0);
+//
+//            for (WJAppCacheScanResult scanResult : mCounter) {
+//                if (scanResult.mPackageName.equals(tmpPath.substring(0, tmpPath.lastIndexOf("/")))) {
+//                    cacheScanResult = scanResult;
+//                    break;
+//                }
+//            }
+//
+//            if (cacheScanResult == null) {
+//                cacheScanResult = new WJAppCacheScanResult();
+//                tmpPath = tmpPath.substring(0, tmpPath.lastIndexOf("/"));
+//                tmpPath = tmpPath.substring(tmpPath.lastIndexOf("/") + 1, tmpPath.length() - 1);
+//                cacheScanResult.mPackageName = tmpPath;
+//                Log.e("SD_TRACE", "add cacheScanResult: " + cacheScanResult.mPackageName);
+//                mCounter.add(cacheScanResult);
+//            }
+//        }
+
         for (String path : dirs) {
             // 计算目标目录大小
             File cleanDirectory = new File(path);
             long total = 0;
             long current = 0;
             String key = path.substring(0, path.lastIndexOf("/"));
-            if (mCounter.containsKey(key)) {
-                total = mCounter.get(key);
+
+
+            WJAppCacheScanResult cacheScanResult = null;
+
+            String tmpPath = key;
+            tmpPath = tmpPath.substring(tmpPath.lastIndexOf("/") + 1, tmpPath.length());
+            //Log.e("SD_TRACE", "== add cacheScanResult: " + tmpPath);
+            for (WJAppCacheScanResult scanResult : mCounter) {
+                if (scanResult.mPackageName.equals(tmpPath)) {
+                    cacheScanResult = scanResult;
+                    break;
+                }
+            }
+
+            if (cacheScanResult == null) {
+                cacheScanResult = new WJAppCacheScanResult();
+
+                cacheScanResult.mPackageName = tmpPath;
+                Log.e("SD_TRACE", "======== add cacheScanResult =====: " + cacheScanResult.mPackageName);
+                mCounter.add(cacheScanResult);
+            }
+
+            if (cacheScanResult != null) {
+                total = cacheScanResult.mJunkTotalSize;
             }
             try {
                 current = getFileSize(cleanDirectory);
@@ -164,7 +209,9 @@ public class DefaultCacheCleanTask extends CleanTask {
                 total += current;
                 Log.d(TAG, "cacheSizeCounter: path=" + path + ", current=" +
                         current + ", total=" + total);
-                mCounter.put(key, total);
+                if (cacheScanResult != null) {
+                    cacheScanResult.mJunkTotalSize = total;
+                }
             }
         }
     }

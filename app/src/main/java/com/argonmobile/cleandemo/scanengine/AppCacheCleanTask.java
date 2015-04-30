@@ -96,11 +96,12 @@ public class AppCacheCleanTask extends CleanTask {
 
     public void scanCache() {
         for (AppCache appCache : mAppCaches) {
-            //Log.d(TAG, "package=" + appCache.getPackageName());
+            Log.d(TAG, "package=" + appCache.getPackageName());
             appCache.cleanTargetDir();
             String path = SDCARD_PATH + appCache.getDir();
             File rootDir = new File(path);
             if (rootDir.exists() && rootDir.isDirectory()) {
+
                 String[] subDirs = rootDir.list();
                 for (String dir : subDirs) {
                     String target = null;
@@ -155,6 +156,7 @@ public class AppCacheCleanTask extends CleanTask {
         if (cacheScanResult == null) {
             cacheScanResult = new WJAppCacheScanResult();
             cacheScanResult.mPackageName = appCache.getPackageName();
+            mCounter.add(cacheScanResult);
         }
 
         for (String path : appCache.getTargetDir()) {

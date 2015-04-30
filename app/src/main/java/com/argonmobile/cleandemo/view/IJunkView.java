@@ -21,5 +21,7 @@ public interface IJunkView {
 
     public void updateSystemCacheListView(ArrayList<WJPackageInfo> cacheList);
 
+    public void startAppCacheSanning();
+    public void stopAppCacheSanning();
     public void updateApplicationCacheListView(ArrayList<WJAppCacheScanResult> appCacheList);
 }

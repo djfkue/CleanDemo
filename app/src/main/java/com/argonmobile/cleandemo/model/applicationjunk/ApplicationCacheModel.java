@@ -10,6 +10,7 @@ import com.argonmobile.cleandemo.data.WJPackageInfo;
 import com.argonmobile.cleandemo.scanengine.AppCacheCleanTask;
 import com.argonmobile.cleandemo.scanengine.AppCacheScanTaskCallback;
 import com.argonmobile.cleandemo.scanengine.CleanTask;
+import com.argonmobile.cleandemo.scanengine.DefaultCacheCleanTask;
 
 import java.util.ArrayList;
 
@@ -36,12 +37,39 @@ public class ApplicationCacheModel {
 
     private long mTotalCacheJunkSize;
 
+    private boolean mAppScanEnd;
     private AppCacheScanTaskCallback mAppCacheScanTaskCallback = new AppCacheScanTaskCallback() {
         @Override
         public void onScanResult(ArrayList<WJAppCacheScanResult> scanResults) {
             synchronized (mAppCacheScanResults) {
-                mAppCacheScanResults.addAll(scanResults);
+                //mAppCacheScanResults.clear();
+                for (WJAppCacheScanResult scanResult : scanResults) {
+                    scanResult.mApplicationInfo = getApplicationInfo(scanResult.mPackageName);
+                    mAppCacheScanResults.add(scanResult);
+                }
             }
+            mAppScanEnd = true;
+            notifyAppCacheScanEnd();
+        }
+
+        @Override
+        public void onCleanResult() {
+
+        }
+    };
+
+    private boolean mDefaultScanEnd;
+    private AppCacheScanTaskCallback mDefaultCacheScanTaskCallback = new AppCacheScanTaskCallback() {
+        @Override
+        public void onScanResult(ArrayList<WJAppCacheScanResult> scanResults) {
+            synchronized (mAppCacheScanResults) {
+                //mAppCacheScanResults.clear();
+                for (WJAppCacheScanResult scanResult : scanResults) {
+                    scanResult.mApplicationInfo = getApplicationInfo(scanResult.mPackageName);
+                    mAppCacheScanResults.add(scanResult);
+                }
+            }
+            mDefaultScanEnd = true;
             notifyAppCacheScanEnd();
         }
 
@@ -94,9 +122,19 @@ public class ApplicationCacheModel {
 
         mTotalCacheJunkSize = 0;
 
+        mAppCacheScanResults.clear();
+
         AppCacheCleanTask agent = new AppCacheCleanTask(mContext, mAppCacheScanTaskCallback);
         agent.execute(CleanTask.TASK_SCAN);
+
+        mAppScanEnd = false;
+
+        DefaultCacheCleanTask defaultCacheCleanTask = new DefaultCacheCleanTask(mContext, mDefaultCacheScanTaskCallback);
+        defaultCacheCleanTask.execute(CleanTask.TASK_SCAN);
+
+        mDefaultScanEnd = false;
         notifyAppCacheScanStart();
+
     }
 
     private ApplicationInfo getApplicationInfo(String packageName) {
@@ -117,9 +155,11 @@ public class ApplicationCacheModel {
 
     private void notifyAppCacheScanEnd() {
         Log.d(TAG, "notifyCacheScanEnd");
-        mScanState = STATE_IDLE;
-        for (AppScanObserver observer : mAppScanObservers) {
-            observer.onScanEnd();
+        if (mAppScanEnd && mDefaultScanEnd) {
+            mScanState = STATE_IDLE;
+            for (AppScanObserver observer : mAppScanObservers) {
+                observer.onScanEnd();
+            }
         }
     }
 

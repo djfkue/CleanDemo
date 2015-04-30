@@ -51,6 +51,7 @@ public class CacheScanTask extends AsyncTask<Void, String, Long>{
 //            if ((!getSysPackages) && (p.versionName == null)) {
 //                continue;
 //            }
+
             WJPackageInfo newInfo = new WJPackageInfo();
 //            newInfo.mAppName = p.applicationInfo.loadLabel(
 //                    mContext.getPackageManager());
